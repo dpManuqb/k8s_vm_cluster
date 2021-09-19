@@ -27,10 +27,8 @@ apt-get install -y kubelet kubeadm kubectl
 echo 'ExecStartPre=/bin/sh -c "swapoff -a"' >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 systemctl daemon-reload
 
-kubeadm init --control-plane-endpoint 192.168.1.100:6443 --pod-network-cidr 10.0.0.0/24
+kubeadm init --control-plane-endpoint 192.168.0.10:6443 --pod-network-cidr 10.0.0.0/24
 
-mkdir -p /home/.kube
-cp -i /etc/kubernetes/admin.conf /home/.kube/config
-chown $(id -u):$(id -g) /home/.kube/config
+export KUBECONFIG=/etc/kubernetes/admin.conf
 
 kubectl apply -f /home/vagrant/weavenet.yaml
