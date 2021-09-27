@@ -22,16 +22,18 @@ sudo swapoff -a
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 
+sudo sed -i '3 i Environment="KUBELET_EXTRA_ARGS=--node-ip '$NODE_IP'"' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sudo echo 'ExecStartPre=/bin/sh -c "swapoff -a"' >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sudo systemctl daemon-reload
 
 sudo kubeadm config images pull
 
-#sudo kubeadm init --control-plane-endpoint 192.168.0.10:6443 --apiserver-advertise-address 192.168.0.10 --pod-network-cidr 10.0.0.0/23
-sudo kubeadm init --control-plane-endpoint 192.168.1.10:6443 --apiserver-advertise-address 192.168.1.10 --pod-network-cidr 10.0.0.0/23
+sudo kubeadm init --control-plane-endpoint $NODE_IP:6443 --apiserver-advertise-address $NODE_IP --pod-network-cidr $POD_NETWORK
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=10.0.0.0/23"
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=$POD_NETWORK"
+
+sudo kubeadm token create $(sudo kubeadm token generate) --print-join-command --ttl=0 >> worker-join.sh 
