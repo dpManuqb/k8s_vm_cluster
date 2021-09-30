@@ -1,20 +1,23 @@
 #!/bin/sh
-touch provision.log
+start=`date +%s`
 
-echo $(date)": Updating..." >> provision.log
 sudo apt-get update
 sudo apt-get upgrade -y
 sudo apt-get install -y net-tools
-echo $(date)": End updating!" >> provision.log
 
-echo $(date)": Intalling docker..." >> provision.log
 sudo apt-get install -y docker.io
-cat /home/vagrant/provision/daemon.json | sudo tee /etc/docker/daemon.json
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"]
+}
+EOF
 sudo systemctl restart docker
-echo $(date)": Docker installed!" >> provision.log
 
-echo $(date)": Installing kubernetes..." >> provision.log
 sudo apt-get install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
 sudo swapoff -a
 
 sudo apt-get update
@@ -25,11 +28,19 @@ sudo echo 'ExecStartPre=/bin/sh -c "swapoff -a"' >> /etc/systemd/system/kubelet.
 sudo systemctl daemon-reload
 
 sudo kubeadm config images pull
-echo $(date)": Kubernetes installed!" >> provision.log
 
-echo $(date)": Initiating $HOSTNAME" >> provision.log
 sudo apt-get install sshpass
+
+while [ "$READY" != "MasterReady" ]
+do
+  sleep 10
+  READY=$(sshpass -p $PASSWORD ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
+  echo "Waiting Master to be ready..."
+done
+
 sshpass -p $PASSWORD scp -oStrictHostKeyChecking=no $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
 chmod +x worker-join.sh
-./worker-join.sh
-echo $(date)": $HOSTNAME joined the cluster!" >> provision.log
+sudo ./worker-join.sh
+
+end=`date +%s`
+echo "$HOSTNAME provisioning ended in $((end-start))s"

@@ -8,7 +8,7 @@ KUBERNETES_MASTER_CPU=2
 KUBERNETES_MASTER_MEM=2048
 PASSWORD="vagrant"
 
-KUBERNETES_NUM_OF_WORKERS=0
+KUBERNETES_NUM_OF_WORKERS=2
 KUBERNETES_WORKER_VMNAME_BASE="worker"
 KUBERNETES_WORKER_HOSTNAME_BASE="k8s-worker"
 KUBERNETES_WORKER_CPU=3
@@ -58,7 +58,7 @@ Vagrant.configure("2") do |config|
         v.memory = KUBERNETES_WORKER_MEM
         v.cpus = KUBERNETES_WORKER_CPU
       end
-      master.vm.provision "file", source: "./provision/", destination: "/home/vagrant/"
+      worker.vm.provision "file", source: "./provision/", destination: "/home/vagrant/"
       worker.vm.provision "shell" do |provision|
         provision.privileged = false
         provision.env = {
