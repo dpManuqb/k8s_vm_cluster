@@ -8,7 +8,7 @@ KUBERNETES_MASTER_CPU=2
 KUBERNETES_MASTER_MEM=2048
 PASSWORD="vagrant"
 
-KUBERNETES_NUM_OF_WORKERS=1
+KUBERNETES_NUM_OF_WORKERS=2
 KUBERNETES_WORKER_VMNAME_BASE="worker"
 KUBERNETES_WORKER_HOSTNAME_BASE="k8s-worker"
 KUBERNETES_WORKER_CPU=3
@@ -35,13 +35,13 @@ Vagrant.configure("2") do |config|
         v.memory = KUBERNETES_MASTER_MEM
         v.cpus = KUBERNETES_MASTER_CPU
       end
+      master.vm.provision "file", source: "./provision/", destination: "/home/vagrant/"
       master.vm.provision "shell" do |provision|
         provision.privileged = false
         provision.env = {
-          "NODE_IP" => IP,
-          "POD_NETWORK" => KUBERNETES_POD_NETWORK,
+          "VARIABLES" => "NODE_IP=#{IP},HOSTNAME=#{master.vm.hostname},POD_NETWORK=#{KUBERNETES_POD_NETWORK},PROVISION_FILE=provision.master.sh"
         }
-        provision.path = "provisioning.master.sh"
+        provision.path = "provision/parallel.provision.sh"
       end
     end
   end
@@ -58,14 +58,13 @@ Vagrant.configure("2") do |config|
         v.memory = KUBERNETES_WORKER_MEM
         v.cpus = KUBERNETES_WORKER_CPU
       end
+      worker.vm.provision "file", source: "./provision/", destination: "/home/vagrant/"
       worker.vm.provision "shell" do |provision|
         provision.privileged = false
         provision.env = {
-          "NODE_IP" => IP,
-          "MASTER_IP" => MASTER_IP,
-          "PASSWORD" => PASSWORD
+          "VARIABLES"=> "NODE_IP=#{IP},HOSTNAME=#{worker.vm.hostname},MASTER_IP=#{MASTER_IP},PASSWORD=#{PASSWORD},PROVISION_FILE=provision.worker.sh"
         }
-        provision.path = "provisioning.worker.sh"
+        provision.path = "provision/parallel.provision.sh"
       end
     end
   end

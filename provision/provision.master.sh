@@ -1,4 +1,5 @@
 #!/bin/sh
+start=`date +%s`
 
 sudo apt-get update
 sudo apt-get upgrade -y
@@ -37,3 +38,8 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=$POD_NETWORK"
 
 sudo kubeadm token create $(sudo kubeadm token generate) --print-join-command --ttl=0 >> worker-join.sh 
+
+end=`date +%s`
+echo "$HOSTNAME provisioning ended in $((end-start))s"
+
+echo "MasterReady"

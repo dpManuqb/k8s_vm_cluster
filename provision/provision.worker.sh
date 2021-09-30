@@ -1,4 +1,5 @@
 #!/bin/sh
+start=`date +%s`
 
 sudo apt-get update
 sudo apt-get upgrade -y
@@ -29,7 +30,17 @@ sudo systemctl daemon-reload
 sudo kubeadm config images pull
 
 sudo apt-get install sshpass
+
+while [ "$READY" != "MasterReady" ]
+do
+  sleep 10
+  READY=$(sshpass -p $PASSWORD ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
+  echo "Waiting Master to be ready..."
+done
+
 sshpass -p $PASSWORD scp -oStrictHostKeyChecking=no $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
 chmod +x worker-join.sh
 sudo ./worker-join.sh
 
+end=`date +%s`
+echo "$HOSTNAME provisioning ended in $((end-start))s"
