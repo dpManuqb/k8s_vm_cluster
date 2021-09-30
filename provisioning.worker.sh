@@ -31,5 +31,5 @@ sudo kubeadm config images pull
 sudo apt-get install sshpass
 sshpass -p $PASSWORD scp -oStrictHostKeyChecking=no $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
 chmod +x worker-join.sh
-./worker-join.sh
+sudo ./worker-join.sh
 

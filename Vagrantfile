@@ -8,7 +8,7 @@ KUBERNETES_MASTER_CPU=2
 KUBERNETES_MASTER_MEM=2048
 PASSWORD="vagrant"
 
-KUBERNETES_NUM_OF_WORKERS=2
+KUBERNETES_NUM_OF_WORKERS=1
 KUBERNETES_WORKER_VMNAME_BASE="worker"
 KUBERNETES_WORKER_HOSTNAME_BASE="k8s-worker"
 KUBERNETES_WORKER_CPU=3
@@ -21,7 +21,6 @@ KUBERNETES_POD_NETWORK="10.0.0.0/23"
 
 IMAGE_NAME="bento/ubuntu-20.04"
 PASSWORD="vagrant"
-VAGRANT_EXPERIMENTAL="disks"
 
 Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
@@ -42,9 +41,7 @@ Vagrant.configure("2") do |config|
           "NODE_IP" => IP,
           "POD_NETWORK" => KUBERNETES_POD_NETWORK,
         }
-        if i == 1 then
-          provision.path = "provisioning.master.sh"
-        end
+        provision.path = "provisioning.master.sh"
       end
     end
   end
