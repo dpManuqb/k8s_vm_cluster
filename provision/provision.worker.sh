@@ -24,9 +24,7 @@ sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 
 sudo sed -i '3 i Environment="KUBELET_EXTRA_ARGS=--node-ip '$NODE_IP'"' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sudo su
-echo 'ExecStartPre=/bin/sh -c "swapoff -a"' >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-exit
+echo 'ExecStartPre=/bin/sh -c "swapoff -a"' | sudo tee -a /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sudo systemctl daemon-reload
 
 sudo kubeadm config images pull
@@ -35,7 +33,7 @@ sudo apt-get install sshpass
 
 while [ "$READY" != "MasterReady" ]
 do
-  sleep 10
+  sleep 15
   READY=$(sshpass -p $PASSWORD ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
   echo "Waiting Master to be ready..."
 done
