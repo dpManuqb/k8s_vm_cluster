@@ -24,7 +24,9 @@ sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 
 sudo sed -i '3 i Environment="KUBELET_EXTRA_ARGS=--node-ip '$NODE_IP'"' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sudo echo 'ExecStartPre=/bin/sh -c "swapoff -a"' >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sudo su
+echo 'ExecStartPre=/bin/sh -c "swapoff -a"' >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+exit
 sudo systemctl daemon-reload
 
 sudo kubeadm config images pull

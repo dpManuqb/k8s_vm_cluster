@@ -6,7 +6,6 @@ KUBERNETES_MASTER_VMNAME_BASE="master"
 KUBERNETES_MASTER_HOSTNAME_BASE="k8s-master"
 KUBERNETES_MASTER_CPU=2
 KUBERNETES_MASTER_MEM=2048
-PASSWORD="vagrant"
 
 KUBERNETES_NUM_OF_WORKERS=2
 KUBERNETES_WORKER_VMNAME_BASE="worker"
@@ -23,7 +22,6 @@ IMAGE_NAME="bento/ubuntu-20.04"
 PASSWORD="vagrant"
 
 Vagrant.configure("2") do |config|
-  config.ssh.insert_key = false
 
   (1..KUBERNETES_NUM_OF_MASTERS).each do |i|      
     config.vm.define "#{KUBERNETES_MASTER_VMNAME_BASE}-#{i-1}" do |master|
