@@ -7,4 +7,4 @@ done
 echo "\nProvisioning $HOSTNAME in background..."
 
 chmod +x /home/vagrant/provision/$PROVISION_FILE
-nohup /home/vagrant/provision/$PROVISION_FILE 2>1 1>provision.log &
+nohup /home/vagrant/provision/$PROVISION_FILE >provision.log 2>&1 &
