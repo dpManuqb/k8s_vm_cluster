@@ -1,4 +1,3 @@
-
 .EXPORT_ALL_VARIABLES:
 
 KUBERNETES_NUM_OF_MASTERS = 1
@@ -7,7 +6,7 @@ KUBERNETES_MASTER_HOSTNAME_BASE = k8s-master
 KUBERNETES_MASTER_CPU = 2
 KUBERNETES_MASTER_MEM = 2048
 
-KUBERNETES_NUM_OF_WORKERS = 2
+KUBERNETES_NUM_OF_WORKERS = 1
 KUBERNETES_WORKER_VMNAME_BASE = worker
 KUBERNETES_WORKER_HOSTNAME_BASE = k8s-worker
 KUBERNETES_WORKER_CPU = 2
@@ -24,7 +23,7 @@ create-ssh-keys:
 	create-ssh-keys.sh
 
 create-vm: create-ssh-keys
-	vagrant up && rm -r ssh
+	vagrant up
 
 run:
 	vagrant up
@@ -33,4 +32,4 @@ halt:
 	vagrant halt
 
 delete:
-	vagrant destroy -f && rm -r .vagrant
+	vagrant destroy -f && rm -r .vagrant ssh
