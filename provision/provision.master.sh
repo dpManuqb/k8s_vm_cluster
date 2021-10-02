@@ -1,6 +1,12 @@
 #!/bin/sh
 start=`date +%s`
 
+cat <<EOF | sudo tee -a /etc/ssh/sshd_config
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+EOF
+sudo systemctl restart ssh
+
 sudo apt-get update
 sudo apt-get upgrade -y
 sudo apt-get install -y net-tools
