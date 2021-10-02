@@ -29,16 +29,15 @@ sudo systemctl daemon-reload
 
 sudo kubeadm config images pull
 
-sudo apt-get install sshpass
-
+chmod 600 /home/vagrant/.ssh/id_rsa
 while [ "$READY" != "MasterReady" ]
 do
   sleep 15
-  READY=$(sshpass -p $PASSWORD ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
+  READY=$(ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
   echo "Waiting Master to be ready..."
 done
 
-sshpass -p $PASSWORD scp -oStrictHostKeyChecking=no $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
+scp -oStrictHostKeyChecking=no $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
 chmod +x worker-join.sh
 sudo ./worker-join.sh
 
