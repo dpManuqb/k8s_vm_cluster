@@ -30,11 +30,12 @@ sudo systemctl daemon-reload
 sudo kubeadm config images pull
 
 chmod 600 /home/vagrant/.ssh/id_rsa
+echo "Waiting Master to be ready..."
+READY=$(ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
 while [ "$READY" != "MasterReady" ]
 do
   sleep 15
   READY=$(ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
-  echo "Waiting Master to be ready..."
 done
 
 scp -oStrictHostKeyChecking=no $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
