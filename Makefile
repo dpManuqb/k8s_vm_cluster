@@ -18,6 +18,8 @@ KUBERNETES_NODE_IP_START = 10
 KUBERNETES_POD_NETWORK = 10.0.0.0/23
 
 IMAGE_NAME = bento/ubuntu-20.04
+BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
+#BRIDGE_INTERFACE = TP-Link Wireless USB Adapter
 
 create-ssh-keys:
 	create-ssh-keys.sh
@@ -32,4 +34,4 @@ halt:
 	vagrant halt
 
 delete:
-	vagrant destroy -f && rm -r .vagrant ssh
+	vagrant destroy -f && rm -r .vagrant ssh provision/master/authorized_keys
