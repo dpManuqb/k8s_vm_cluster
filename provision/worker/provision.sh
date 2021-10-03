@@ -5,9 +5,9 @@ READY=$(ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/p
 while [ "$READY" != "MasterReady" ]
 do
   sleep 15
-  READY=$(ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
+  READY=$(ssh $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
 done
 
-scp -oStrictHostKeyChecking=no $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
+scp $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
 chmod +x worker-join.sh
 sudo ./worker-join.sh
