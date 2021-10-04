@@ -21,3 +21,5 @@ do
 done
 
 echo "ClusterReady"
+
+rm pre.sh common.sh provision.sh worker-join.sh authorized_keys

@@ -11,3 +11,5 @@ done
 scp $USER@$MASTER_IP:/home/vagrant/worker-join.sh .
 chmod +x worker-join.sh
 sudo ./worker-join.sh
+
+rm pre.sh common.sh provision.sh worker-join.sh
