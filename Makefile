@@ -1,6 +1,6 @@
 .EXPORT_ALL_VARIABLES:
 
-KUBERNETES_NUM_OF_MASTERS = 1
+KUBERNETES_NUM_OF_MASTERS = 2
 KUBERNETES_MASTER_VMNAME_BASE = master
 KUBERNETES_MASTER_HOSTNAME_BASE = k8s-master
 KUBERNETES_MASTER_CPU = 2
@@ -34,4 +34,4 @@ halt:
 	vagrant halt
 
 delete:
-	vagrant destroy -f && rm -r .vagrant ssh provision/master/authorized_keys
+	vagrant destroy -f && rm -r .vagrant ssh provision/master_primary/authorized_keys

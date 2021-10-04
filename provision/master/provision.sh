@@ -1,25 +1,15 @@
 #!/bin/sh
 
-sudo kubeadm init --control-plane-endpoint $NODE_IP:6443 --apiserver-advertise-address $NODE_IP --pod-network-cidr $POD_NETWORK
-
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=$POD_NETWORK"
-
-sudo kubeadm token create $(sudo kubeadm token generate) --print-join-command --ttl=0 >> worker-join.sh
-
-echo "MasterReady"
-
-JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
-READY_NODES=$(kubectl get nodes -o jsonpath="$JSONPATH" | grep -o "Ready=True" | wc -l)
-while [ "$READY_NODES" != "$TOTAL_NODES" ]
+echo "Waiting Master to be ready..."
+READY=$(ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
+while [ "$READY" != "MasterReady" ]
 do
-  sleep 30
-  READY_NODES=$(kubectl get nodes -o jsonpath="$JSONPATH" | grep -o "Ready=True" | wc -l)
+  sleep 15
+  READY=$(ssh $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
 done
 
-echo "ClusterReady"
+scp $USER@$MASTER_IP:/home/vagrant/master-join.sh .
+chmod +x master-join.sh
+sudo ./master-join.sh
 
-rm pre.sh common.sh provision.sh worker-join.sh authorized_keys
+rm pre.sh common.sh provision.sh master-join.sh

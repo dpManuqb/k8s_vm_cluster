@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
       master.vm.provision "shell" do |provision|
         provision.privileged = false
         provision.env = {
-          "VARIABLES" => "NODE_IP=#{IP},HOSTNAME=#{master.vm.hostname},POD_NETWORK=#{ENV["KUBERNETES_POD_NETWORK"]},TOTAL_NODES=#{ENV["KUBERNETES_NUM_OF_MASTERS"].to_i+ENV["KUBERNETES_NUM_OF_WORKERS"].to_i}"
+          "VARIABLES" => "NODE_IP=#{IP},HOSTNAME=#{master.vm.hostname},MASTER_IP=#{MASTER_IP},POD_NETWORK=#{ENV["KUBERNETES_POD_NETWORK"]},MASTER_NUM_NODES=#{ENV["KUBERNETES_NUM_OF_MASTERS"]},WORKER_NUM_NODES=#{ENV["KUBERNETES_NUM_OF_WORKERS"]}"
         }
         provision.path = "provision/parallel.provision.sh"
       end

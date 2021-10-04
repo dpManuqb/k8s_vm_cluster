@@ -2,7 +2,7 @@
 
 echo "Waiting Master to be ready..."
 READY=$(ssh -oStrictHostKeyChecking=no $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
-while [ "$READY" != "MasterReady" ]
+while [ "$READY" != "AllMasterReady" ]
 do
   sleep 15
   READY=$(ssh $USER@$MASTER_IP 'tail -1 /home/vagrant/provision.log')
