@@ -9,7 +9,8 @@ do
 done
 
 scp $USER@$MASTER_IP:/home/vagrant/master-join.sh .
+sed -i '${s/$/ --apiserver-advertise-address='"$NODE_IP"'/}' master-join.sh 
 chmod +x master-join.sh
 sudo ./master-join.sh
 
-rm pre.sh common.sh provision.sh master-join.sh
+#rm pre.sh common.sh provision.sh master-join.sh
