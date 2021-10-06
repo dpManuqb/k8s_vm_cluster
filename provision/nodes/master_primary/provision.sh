@@ -1,5 +1,13 @@
 #!/bin/sh
 
+echo "Waiting LoadBalancer to be ready..."
+READY=$(ssh -oStrictHostKeyChecking=no $USER@$CLUSTER_IP 'tail -1 /home/vagrant/provision.log')
+while [ "$READY" != "LoadbalancerReady" ]
+do
+  sleep 15
+  READY=$(ssh $USER@$CLUSTER 'tail -1 /home/vagrant/provision.log')
+done
+
 sudo kubeadm init --control-plane-endpoint $CLUSTER_IP:6443 --apiserver-advertise-address $NODE_IP --pod-network-cidr $POD_NETWORK
 
 mkdir -p $HOME/.kube

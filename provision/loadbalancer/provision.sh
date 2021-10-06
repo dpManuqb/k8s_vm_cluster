@@ -5,6 +5,8 @@ sudo apt-get upgrade -y
 
 sudo apt-get install -y haproxy
 
-sudo mv haproxy.cfg /etc/haproxy/haproxy.cfg
+cat haproxy.cfg | sudo tee -a /etc/haproxy/haproxy.cfg
 
-systemctl restart haproxy
+sudo systemctl restart haproxy
+
+echo "LoadbalancerReady"

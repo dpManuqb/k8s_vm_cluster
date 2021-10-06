@@ -12,7 +12,7 @@ KUBERNETES_WORKER_HOSTNAME_BASE = k8s-worker
 KUBERNETES_WORKER_CPU = 1
 KUBERNETES_WORKER_MEM = 1024
 
-KUBERNETES_NODE_NETWORK = 192.168.0.0/24
+KUBERNETES_NODE_NETWORK_BASE = 192.168.0.
 KUBERNETES_NODE_IP_START = 10
 
 KUBERNETES_POD_NETWORK = 10.0.0.0/23
@@ -21,10 +21,13 @@ IMAGE_NAME = bento/ubuntu-20.04
 #BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
 BRIDGE_INTERFACE = TP-Link Wireless USB Adapter
 
-create-ssh-keys:
+ssh-keys:
 	create-ssh-keys.sh
 
-install: create-ssh-keys
+haproxy-conf:
+	create-haproxy-conf.sh
+
+install: ssh-keys haproxy-conf
 	vagrant up
 
 run:
@@ -34,4 +37,4 @@ halt:
 	vagrant halt
 
 delete:
-	vagrant destroy -f && rm -r .vagrant ssh provision/master_primary/authorized_keys
+	vagrant destroy -f && rm -f -r .vagrant ssh provision/master_primary/authorized_keys provision/loadbalancer/haproxy.cfg
