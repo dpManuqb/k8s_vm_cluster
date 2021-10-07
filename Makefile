@@ -1,21 +1,22 @@
 .EXPORT_ALL_VARIABLES:
 
-KUBERNETES_NUM_OF_MASTERS = 1
-KUBERNETES_MASTER_VMNAME_BASE = master
-KUBERNETES_MASTER_HOSTNAME_BASE = k8s-master
-KUBERNETES_MASTER_CPU = 2
-KUBERNETES_MASTER_MEM = 2048
+NUM_OF_MASTERS = 1
+MASTER_VMNAME_BASE = master
+MASTER_HOSTNAME_BASE = k8s-master
+MASTER_CPU = 2
+MASTER_MEM = 2048
 
-KUBERNETES_NUM_OF_WORKERS = 2
-KUBERNETES_WORKER_VMNAME_BASE = worker
-KUBERNETES_WORKER_HOSTNAME_BASE = k8s-worker
-KUBERNETES_WORKER_CPU = 3
-KUBERNETES_WORKER_MEM = 4096
+NUM_OF_WORKERS = 2
+WORKER_VMNAME_BASE = worker
+WORKER_HOSTNAME_BASE = k8s-worker
+WORKER_CPU = 3
+WORKER_MEM = 4096
 
-KUBERNETES_NODE_NETWORK = 192.168.0.0/24
-KUBERNETES_NODE_IP_START = 10
+NODE_NETWORK_BASE = 192.168.0.
+NODE_IP_START = 10
 
-KUBERNETES_POD_NETWORK = 10.0.0.0/23
+POD_NETWORK = 10.0.0.0/23
+POD_NETWORK_MANAGER = weave #weave/calico By now only works weave
 
 IMAGE_NAME = bento/ubuntu-20.04
 #BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
@@ -27,11 +28,11 @@ create-ssh-keys:
 install: create-ssh-keys
 	vagrant up
 
-run:
-	vagrant up
+config: 
+	copy-config.sh
 
 halt:
 	vagrant halt
 
 delete:
-	vagrant destroy -f && rm -r .vagrant ssh provision/master/authorized_keys
+	vagrant destroy -f && rm -f -r .vagrant ssh config provision/master/authorized_keys

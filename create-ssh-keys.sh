@@ -1,11 +1,10 @@
 #!/bin/sh
 
 mkdir -p ssh
-touch provision/master/authorized_keys
 
-for i in $(seq 1 $KUBERNETES_NUM_OF_WORKERS)
+for i in $(seq 0 `expr $NUM_OF_WORKERS - 1`)
 do
-    mkdir -p ssh/$i
-    ssh-keygen -t rsa -f ssh/$i/id_rsa -C "worker-$i" -N ""
-    cat ssh/$i/id_rsa.pub >> provision/master/authorized_keys
+    mkdir -p ssh/worker_$i
+    ssh-keygen -t rsa -q -f ssh/worker_$i/id_rsa -C "worker-$i" -N ""
+    cat ssh/worker_$i/id_rsa.pub >> provision/master/authorized_keys
 done
