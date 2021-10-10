@@ -16,7 +16,7 @@ NODE_NETWORK_BASE = 192.168.1.
 NODE_IP_START = 10
 
 POD_NETWORK = 10.0.0.0/23
-POD_NETWORK_MANAGER = calico #weave/calico By now only works weave
+POD_NETWORK_MANAGER = calico #weave/calico
 
 IMAGE_NAME = bento/ubuntu-20.04
 BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
