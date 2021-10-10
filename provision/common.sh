@@ -3,6 +3,8 @@
 sudo apt-get update
 sudo apt-get upgrade -y
 
+sudo ufw disable
+
 sudo modprobe br_netfilter
 sudo modprobe overlay
 
