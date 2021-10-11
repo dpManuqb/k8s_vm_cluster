@@ -1,40 +1,45 @@
 .EXPORT_ALL_VARIABLES:
 
-KUBERNETES_NUM_OF_MASTERS = 2
-KUBERNETES_MASTER_VMNAME_BASE = master
-KUBERNETES_MASTER_HOSTNAME_BASE = k8s-master
-KUBERNETES_MASTER_CPU = 2
-KUBERNETES_MASTER_MEM = 2048
+NUM_OF_MASTERS = 2
+NUM_OF_LBS = 1
+MASTER_VMNAME_BASE = master
+MASTER_HOSTNAME_BASE = k8s-master
+MASTER_CPU = 2
+MASTER_MEM = 2048
 
-KUBERNETES_NUM_OF_WORKERS = 1
-KUBERNETES_WORKER_VMNAME_BASE = worker
-KUBERNETES_WORKER_HOSTNAME_BASE = k8s-worker
-KUBERNETES_WORKER_CPU = 1
-KUBERNETES_WORKER_MEM = 1024
+NUM_OF_WORKERS = 1
+WORKER_VMNAME_BASE = worker
+WORKER_HOSTNAME_BASE = k8s-worker
+WORKER_CPU = 1
+WORKER_MEM = 512
 
-KUBERNETES_NODE_NETWORK_BASE = 192.168.0.
-KUBERNETES_NODE_IP_START = 10
+NODE_NETWORK_BASE = 192.168.1.
+NODE_IP_START = 10
 
-KUBERNETES_POD_NETWORK = 10.0.0.0/23
+POD_NETWORK = 10.0.0.0/23
+POD_NETWORK_MANAGER = calico #weave/calico
 
 IMAGE_NAME = bento/ubuntu-20.04
-#BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
-BRIDGE_INTERFACE = TP-Link Wireless USB Adapter
+BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
+#BRIDGE_INTERFACE = TP-Link Wireless USB Adapter
 
-ssh-keys:
-	create-ssh-keys.sh
+create-ssh-keys:
+	scripts/create-ssh-keys.sh
 
 haproxy-conf:
-	create-haproxy-conf.sh
+	scripts/create-haproxy-conf.sh
 
-install: ssh-keys haproxy-conf
+install: create-ssh-keys haproxy-conf
 	vagrant up
 
 run:
 	vagrant up
 
+config: 
+	scripts/copy-config.sh
+
 halt:
 	vagrant halt
 
 delete:
-	vagrant destroy -f && rm -f -r .vagrant ssh provision/master_primary/authorized_keys provision/loadbalancer/haproxy.cfg
+	vagrant destroy -f && rm -f -r .vagrant ssh config provision/node/master/authorized_keys provision/loadbalancer/haproxy.cfg provision/loadbalancer/authorized_keys

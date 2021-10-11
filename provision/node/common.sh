@@ -1,8 +1,25 @@
 #!/bin/sh
-start=`date +%s`
 
 sudo apt-get update
 sudo apt-get upgrade -y
+
+sudo ufw disable
+
+sudo modprobe br_netfilter
+sudo modprobe overlay
+
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+br_netfilter
+overlay
+EOF
+
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward = 1
+net.ipv6.ip_forward
+EOF
+sudo sysctl --system
 
 sudo apt-get install -y docker.io
 cat <<EOF | sudo tee /etc/docker/daemon.json
@@ -18,6 +35,7 @@ cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 
+sudo sed -i '/swap/d' /etc/fstab  
 sudo swapoff -a
 
 sudo apt-get update
@@ -28,6 +46,3 @@ sudo sed -i '0,/ExecStart=/s//ExecStartPre=\/bin\/sh -c "sudo swapoff -a"\n&/' /
 sudo systemctl daemon-reload
 
 sudo kubeadm config images pull
-
-end=`date +%s`
-echo "$HOSTNAME common provisioning ended in $((end-start))s"
