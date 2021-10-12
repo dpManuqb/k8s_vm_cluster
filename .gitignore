@@ -1,6 +1,4 @@
 .vagrant
 .vscode
 ssh
-provision/loadbalancer/authorized_keys
 provision/loadbalancer/haproxy.cfg
-provision/node/master/authorized_keys

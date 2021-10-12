@@ -2,18 +2,26 @@
 
 mkdir -p ssh
 
-for i in $(seq 0 $(($NUM_OF_WORKERS - 1)))
+for i in $(seq 0 $(($NUM_OF_LBS - 1)))
 do
-    mkdir -p ssh/worker_$i
-    ssh-keygen -t rsa -q -f ssh/worker_$i/id_rsa -C "worker-$i" -N ""
-    cat ssh/worker_$i/id_rsa.pub >> provision/node/master/authorized_keys
+    mkdir -p ssh/lb_$i
+    ssh-keygen -t rsa -q -f ssh/lb_$i/id_rsa -C "lb-$i" -N ""
+    cat ssh/lb_$i/id_rsa.pub >> ssh/authorized_keys
 done
 
 for i in $(seq 0 $(($NUM_OF_MASTERS - 1)))
 do
     mkdir -p ssh/master_$i
     ssh-keygen -t rsa -q -f ssh/master_$i/id_rsa -C "master-$i" -N ""
-    cat ssh/master_$i/id_rsa.pub >> provision/node/master/authorized_keys
+    cat ssh/master_$i/id_rsa.pub >> ssh/authorized_keys
 done
 
-cp provision/node/master/authorized_keys provision/loadbalancer/authorized_keys
+for i in $(seq 0 $(($NUM_OF_WORKERS - 1)))
+do
+    mkdir -p ssh/worker_$i
+    ssh-keygen -t rsa -q -f ssh/worker_$i/id_rsa -C "worker-$i" -N ""
+    cat ssh/worker_$i/id_rsa.pub >> ssh/authorized_keys
+done
+
+echo "n" | ssh-keygen -t rsa -q -f ~/.ssh/id_rsa -C "host" -N '""'
+cat ~/.ssh/id_rsa.pub >> ssh/authorized_keys
