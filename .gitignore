@@ -1,4 +1,4 @@
 .vagrant
 .vscode
 ssh
-provision/loadbalancer/haproxy.cfg
+provision/loadbalancer/config

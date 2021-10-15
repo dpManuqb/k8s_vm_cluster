@@ -1,14 +1,27 @@
 #!/bin/sh
 
-echo "Waiting LoadBalancer to be ready..."
-READY=$(ssh -oStrictHostKeyChecking=no $USER@$CLUSTER_IP 'grep LoadbalancerReady /home/vagrant/provision.log | head -1')
-while [ "$READY" != "LoadbalancerReady" ]
-do
-  sleep 10
-  READY=$(ssh $USER@$CLUSTER_IP 'grep LoadbalancerReady /home/vagrant/provision.log | head -1')
-done
+if [ $NUM_OF_MASTERS -gt 1 ]
+then
+    if [ $NUM_OF_LBS -eq 0 ]
+    then
+        sudo mkdir -p /etc/haproxy /etc/keepalived /etc/kubernetes/manifests
+        sudo mv config/haproxy.cfg /etc/haproxy/haproxy.cfg
+        sudo mv config/keepalived.conf /etc/keepalived/keepalived.conf
+        sudo mv config/check_apiserver.sh /etc/keepalived/check_apiserver.sh
+        sudo mv config/haproxy.yaml /etc/kubernetes/manifests/haproxy.yaml
+        sudo mv config/keepalived.yaml /etc/kubernetes/manifests/keepalived.yaml
+    else
+      echo "Waiting LoadBalancer to be ready..."
+      READY=$(ssh -oStrictHostKeyChecking=no $USER@$LB_IP 'grep LoadbalancerReady /home/vagrant/provision.log | head -1')
+      while [ "$READY" != "LoadbalancerReady" ]
+      do
+        sleep 10
+        READY=$(ssh $USER@$LB_IP 'grep LoadbalancerReady /home/vagrant/provision.log | head -1')
+      done
+    fi
+fi
 
-sudo kubeadm init --control-plane-endpoint $CLUSTER_IP:6443 --apiserver-advertise-address $NODE_IP --pod-network-cidr $POD_NETWORK
+sudo kubeadm init --control-plane-endpoint $CLUSTER_IP:$CLUSTER_PORT --apiserver-advertise-address $NODE_IP --apiserver-bind-port $MASTER_PORT --pod-network-cidr $POD_NETWORK
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -48,6 +61,9 @@ do
   READY_NODES=$(kubectl get nodes -o jsonpath="$JSONPATH" | grep -o "Ready=True" | wc -l)
 done
 
-echo "ClusterReady"
+if [ $MASTER_SCHEDULE_PODS = "yes" ] 
+then
+  kubectl taint nodes --all node-role.kubernetes.io/master-
+fi
 
-#rm pre.sh common.sh provision.sh master-join.sh worker-join.sh authorized_keys calico.yaml
+echo "ClusterReady"
