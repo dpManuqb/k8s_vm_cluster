@@ -22,6 +22,6 @@ do
 done
 
 scp $USER@$MASTER_IP:/home/vagrant/master-join.sh .
-sed -i '${s/$/ --apiserver-advertise-address '"$NODE_IP"' --apiserver-bind-port '"$MASTER_PORT"'/}' master-join.sh 
+sed -i '${s/$/ --apiserver-advertise-address '"$NODE_IP"' --apiserver-bind-port '"$MASTER_PORT"' --ignore-preflight-errors=DirAvailable--etc-kubernetes-manifests/}' master-join.sh 
 chmod +x master-join.sh
 sudo ./master-join.sh

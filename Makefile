@@ -1,16 +1,16 @@
 .EXPORT_ALL_VARIABLES:
 
 IMAGE_NAME = bento/ubuntu-20.04
-#BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
-BRIDGE_INTERFACE = TP-Link Wireless USB Adapter
+BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
+#BRIDGE_INTERFACE = TP-Link Wireless USB Adapter
 
-NODE_NETWORK_BASE = 192.168.0.
+NODE_NETWORK_BASE = 192.168.1.
 NODE_IP_START = 10
 
 POD_NETWORK = 10.0.0.0/23
-POD_NETWORK_MANAGER = weave #weave/calico
+POD_NETWORK_MANAGER = calico #weave/calico
 
-NUM_OF_LBS = 1
+NUM_OF_LBS = 0
 LB_VMNAME_BASE = loadbalancer
 LB_HOSTNAME_BASE = loadbalancer
 LB_CPU = 1
@@ -34,7 +34,7 @@ CLUSTER_IP = NODE_IP_START
 CLUSTER_PORT = 6443
 MASTER_PORT = 6443
 ifeq ($(NUM_OF_MASTERS),1)
-	MASTER_IP = CLUSTER_IP
+	MASTER_IP = NODE_IP_START
 else 
 	ifeq ($(NUM_OF_LBS),1)
 		LB_IP = NODE_IP_START
@@ -57,13 +57,16 @@ create-ssh-keys:
 ha-conf:
 	scripts/create-ha-conf.sh
 
-install: create-ssh-keys ha-conf run
-
 run:
 	vagrant up
 
+wait-install:
+	scripts/wait-install.sh
+
 config: 
 	scripts/copy-config.sh
+
+install: create-ssh-keys ha-conf run wait-install config
 
 halt:
 	vagrant halt

@@ -18,7 +18,7 @@ fi
 sed -i 's/$CLUSTER_PORT/'"$CLUSTER_PORT"'/g' ./provision/loadbalancer/config/haproxy.cfg
 sed 's/$CLUSTER_PORT/'"$CLUSTER_PORT"'/g' ./provision/loadbalancer/templates/haproxy.yaml > ./provision/loadbalancer/config/haproxy.yaml
 sed 's/$CLUSTER_IP/'"$NODE_NETWORK_BASE$(($CLUSTER_IP))"'/g; s/$CLUSTER_PORT/'"$CLUSTER_PORT"'/g' ./provision/loadbalancer/templates/check_apiserver.sh > ./provision/loadbalancer/config/check_apiserver.sh
-sed 's/$CLUSTER_IP/g'"$NODE_NETWORK_BASE$(($CLUSTER_IP))"'/g' ./provision/loadbalancer/templates/keepalived.conf > ./provision/loadbalancer/config/keepalived.conf
+sed 's/$CLUSTER_IP/'"$NODE_NETWORK_BASE$(($CLUSTER_IP))"'/g' ./provision/loadbalancer/templates/keepalived.conf > ./provision/loadbalancer/config/keepalived.conf
 cp ./provision/loadbalancer/keepalived.yaml ./provision/loadbalancer/config/keepalived.yaml 
 
 for i in $(seq 0 $(($NUM_OF_MASTERS - 1)))
