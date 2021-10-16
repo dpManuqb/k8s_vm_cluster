@@ -1,16 +1,8 @@
 .EXPORT_ALL_VARIABLES:
 
-NUM_OF_MASTERS = 1
-MASTER_VMNAME_BASE = master
-MASTER_HOSTNAME_BASE = k8s-master
-MASTER_CPU = 2
-MASTER_MEM = 2048
-
-NUM_OF_WORKERS = 1
-WORKER_VMNAME_BASE = worker
-WORKER_HOSTNAME_BASE = k8s-worker
-WORKER_CPU = 1
-WORKER_MEM = 1024
+IMAGE_NAME = bento/ubuntu-20.04
+BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
+#BRIDGE_INTERFACE = TP-Link Wireless USB Adapter
 
 NODE_NETWORK_BASE = 192.168.1.
 NODE_IP_START = 10
@@ -18,24 +10,66 @@ NODE_IP_START = 10
 POD_NETWORK = 10.0.0.0/23
 POD_NETWORK_MANAGER = calico #weave/calico
 
-IMAGE_NAME = bento/ubuntu-20.04
-BRIDGE_INTERFACE = Intel(R) Wireless-AC 9560
-#BRIDGE_INTERFACE = TP-Link Wireless USB Adapter
+NUM_OF_LBS = 0
+LB_VMNAME_BASE = loadbalancer
+LB_HOSTNAME_BASE = loadbalancer
+LB_CPU = 1
+LB_MEM = 512
+
+NUM_OF_MASTERS = 2
+MASTER_VMNAME_BASE = master
+MASTER_HOSTNAME_BASE = k8s-master
+MASTER_SCHEDULE_PODS = no
+MASTER_CPU = 2
+MASTER_MEM = 2048
+
+NUM_OF_WORKERS = 0
+WORKER_VMNAME_BASE = worker
+WORKER_HOSTNAME_BASE = k8s-worker
+WORKER_CPU = 1
+WORKER_MEM = 1024
+
+
+CLUSTER_IP = NODE_IP_START
+CLUSTER_PORT = 6443
+MASTER_PORT = 6443
+ifeq ($(NUM_OF_MASTERS),1)
+	MASTER_IP = NODE_IP_START
+else 
+	ifeq ($(NUM_OF_LBS),1)
+		LB_IP = NODE_IP_START
+		MASTER_IP = NODE_IP_START + NUM_OF_LBS
+	else
+		ifeq ($(NUM_OF_LBS),0)
+			LB_IP = null
+    		MASTER_IP = NODE_IP_START + 1
+    		MASTER_PORT = 8443
+		else
+			LB_IP = NODE_IP_START + 1
+			MASTER_IP = NODE_IP_START + NUM_OF_LBS + 1
+		endif
+	endif
+endif
 
 create-ssh-keys:
-	create-ssh-keys.sh
+	scripts/create-ssh-keys.sh
 
-install: create-ssh-keys
-	vagrant up
+ha-conf:
+	scripts/create-ha-conf.sh
 
 run:
 	vagrant up
 
+wait-install:
+	scripts/wait-install.sh
+
 config: 
-	copy-config.sh
+	scripts/copy-config.sh
+
+install: create-ssh-keys ha-conf run wait-install config
 
 halt:
 	vagrant halt
 
 delete:
-	vagrant destroy -f && rm -f -r .vagrant ssh config provision/master/authorized_keys
+	vagrant destroy -f && rm -f -r .vagrant ssh provision/loadbalancer/config

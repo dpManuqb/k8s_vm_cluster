@@ -1,4 +1,4 @@
 .vagrant
 .vscode
 ssh
-provision/master/authorized_keys
+provision/loadbalancer/config
