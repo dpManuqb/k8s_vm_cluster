@@ -20,7 +20,8 @@ do
     ssh-keygen -t rsa -q -f ssh/worker_$i/id_rsa -C "worker-$i" -N ""
     cat ssh/worker_$i/id_rsa.pub >> ssh/authorized_keys
 done
-
+echo "n" | ssh-keygen -t rsa -f $HOME/.ssh/id_rsa -N ""
+cat $HOME/.ssh/id_rsa.pub >> ssh/authorized_keys
 
 for i in $(seq 0 $(($NUM_OF_LBS - 1)))
 do

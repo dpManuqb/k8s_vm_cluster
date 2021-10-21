@@ -1,5 +1,8 @@
 #!/bin/sh
 
+mv id_rsa /home/vagrant/.ssh/id_rsa
+mv id_rsa.pub /home/vagrant/.ssh/id_rsa.pub
+cat authorized_keys >> /home/vagrant/.ssh/authorized_keys
 chmod 600 /home/vagrant/.ssh/id_rsa
 
 sudo apt-get update

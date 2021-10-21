@@ -67,11 +67,10 @@ Vagrant.configure("2") do |config|
       loadbalancer.vm.network "public_network", ip: IP, bridge: BRIDGE_INTERFACE
       loadbalancer.vm.hostname = "#{LB_HOSTNAME_BASE}-0"
       loadbalancer.vm.provider "virtualbox" do |v|
-        v.gui = true
         v.memory = LB_MEM
         v.cpus = LB_CPU
       end
-      loadbalancer.vm.provision "file", source: "./ssh/lb_#{i}", destination: "/home/vagrant/.ssh"
+      loadbalancer.vm.provision "file", source: "./ssh/lb_#{i}", destination: "/home/vagrant"
       loadbalancer.vm.provision "file", source: "./provision/loadbalancer", destination: "/home/vagrant"
       loadbalancer.vm.provision "shell" do |provision|
         provision.privileged = false
@@ -89,7 +88,6 @@ Vagrant.configure("2") do |config|
     master.vm.network "public_network", ip: IP, bridge: BRIDGE_INTERFACE
     master.vm.hostname = "#{MASTER_HOSTNAME_BASE}-0"
     master.vm.provider "virtualbox" do |v|
-      v.gui = true
       v.memory = MASTER_MEM
       v.cpus = MASTER_CPU
     end
@@ -98,7 +96,7 @@ Vagrant.configure("2") do |config|
       master.vm.provision "file", source: "./provision/loadbalancer/config", destination: "/home/vagrant/config"
     end
 
-    master.vm.provision "file", source: "./ssh/master_0", destination: "/home/vagrant/.ssh"
+    master.vm.provision "file", source: "./ssh/master_0", destination: "/home/vagrant"
     master.vm.provision "file", source: "./provision/node/master", destination: "/home/vagrant"
     master.vm.provision "shell" do |provision|
       provision.privileged = false
@@ -116,7 +114,6 @@ Vagrant.configure("2") do |config|
       master.vm.network "public_network", ip: IP, bridge: BRIDGE_INTERFACE
       master.vm.hostname = "#{MASTER_HOSTNAME_BASE}-#{i}"
       master.vm.provider "virtualbox" do |v|
-        v.gui = true
         v.memory = MASTER_MEM
         v.cpus = MASTER_CPU
       end
@@ -125,7 +122,7 @@ Vagrant.configure("2") do |config|
         master.vm.provision "file", source: "./provision/loadbalancer/config", destination: "/home/vagrant/config"
       end
 
-      master.vm.provision "file", source: "./ssh/master_#{i}", destination: "/home/vagrant/.ssh"
+      master.vm.provision "file", source: "./ssh/master_#{i}", destination: "/home/vagrant"
       master.vm.provision "file", source: "./provision/node/master", destination: "/home/vagrant"
       master.vm.provision "shell" do |provision|
         provision.privileged = false
@@ -144,12 +141,11 @@ Vagrant.configure("2") do |config|
       worker.vm.network "public_network", ip: IP, bridge: BRIDGE_INTERFACE
       worker.vm.hostname = "#{WORKER_HOSTNAME_BASE}-#{i}"
       worker.vm.provider "virtualbox" do |v|
-        v.gui = true
         v.memory = WORKER_MEM
         v.cpus = WORKER_CPU
       end
 
-      worker.vm.provision "file", source: "./ssh/worker_#{i}", destination: "/home/vagrant/.ssh"
+      worker.vm.provision "file", source: "./ssh/worker_#{i}", destination: "/home/vagrant"
       worker.vm.provision "file", source: "./provision/node/worker", destination: "/home/vagrant"
       worker.vm.provision "shell" do |provision|
         provision.privileged = false
