@@ -72,4 +72,4 @@ halt:
 	vagrant halt
 
 delete:
-	vagrant destroy -f && rm -f -r .vagrant ssh provision/loadbalancer/config
+	vagrant destroy -f && rm -rf .vagrant ssh provision/loadbalancer/config
